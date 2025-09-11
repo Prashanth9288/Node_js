@@ -1,15 +1,20 @@
+const express = require("express");
+const connetTodb = require("./config/db");
+const dotenv = require("dotenv");
+const bookRoutes = require("./routes/bookRoutes");
 
 
-const express=require("express")
-const dotenv=require("dotenv")
-const connectdb = require("./config/db")
-dotenv.config()
-const app=express();
+dotenv.config();
+connetTodb()
 
+const app = express();
+
+// Middleware
 app.use(express.json());
-connectdb()
-const PORT=process.env.PORT
-app.listen(PORT, ()=>{
-  console.log(`Server running on ${PORT}`)
 
-})
+app.use("/", bookRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`)
+);
