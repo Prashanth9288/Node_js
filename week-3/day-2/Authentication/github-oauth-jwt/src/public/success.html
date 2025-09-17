@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Login Success</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding:20px; }
+      pre { background:#f5f5f5; padding:10px; border-radius:6px; overflow:auto; }
+      button.copy { margin-top:8px; }
+    </style>
+  </head>
+  <body>
+    <h2>Login successful</h2>
+    <p>Token (copy this or use the button below):</p>
+    <pre id="token">Loading...</pre>
+    <button class="copy" id="copyBtn">Copy token</button>
+
+    <h3>User profile (fetched using token)</h3>
+    <pre id="profile">Loading...</pre>
+
+    <script>
+      const token = new URLSearchParams(window.location.search).get('token');
+      const tokenEl = document.getElementById('token');
+      const profileEl = document.getElementById('profile');
+      const copyBtn = document.getElementById('copyBtn');
+
+      if (!token) {
+        tokenEl.textContent = 'No token found in query param.';
+      } else {
+        tokenEl.textContent = token;
+        fetch('/api/profile', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(r => r.json())
+        .then(data => {
+          profileEl.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          profileEl.textContent = 'Failed to fetch profile: ' + err.message;
+        });
+      }
+
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(token || '').then(() => {
+          copyBtn.textContent = 'Copied!';
+        });
+      }
+    </script>
+  </body>
+</html>
